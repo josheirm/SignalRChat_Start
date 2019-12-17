@@ -52,14 +52,17 @@ namespace SignalRChat.Hubs
             //Clients A_Client = new Clients();
             //A_Client.ConnectionId = Context.ConnectionId;
             //A_Client.Name = "a";
+            
 
             integer++;
-            if (integer == 2)
-            {
-
+            
                 //await Clients.All.SendAsync("ReceiveMessage", user, message);
                 await Clients.Client(Context.ConnectionId).SendAsync("IsRegister",user, message);
-            }
+            //if (integer == 2)
+            //{
+               // await Clients.All.SendAsync("ReceiveMessage", user, message);
+            //}
+
         }
 
 
