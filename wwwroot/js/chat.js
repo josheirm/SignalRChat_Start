@@ -16,7 +16,7 @@ connection.on("ReceiveMessage", function (user, message) {
     document.getElementById("messagesList").appendChild(li);
 });
 
-///////////////
+
 
 connection.on("IsRegister", function (user, message) {
    
@@ -25,7 +25,24 @@ connection.on("IsRegister", function (user, message) {
    
 });
 
-///////////////
+//////////////
+connection.on("Printnames1", function () {
+
+    //$('#registerButton').hide();
+    $("#messagesList").html("Player one its your turn!");
+
+});
+
+connection.on("Printnames2", function () {
+
+    //$('#registerButton').hide();
+    $("#messagesList").html("Player two its not your turn!");
+
+});
+
+
+/////////////
+
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = false;
 }).catch(function (err) {
