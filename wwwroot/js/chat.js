@@ -5,6 +5,9 @@
 var integer = 0;
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+
+
+
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 
@@ -19,13 +22,14 @@ connection.on("ReceiveMessage", function (user, message) {
 
 
 connection.on("IsRegister", function () {
-   
+
+    
     $('#registerButton').hide();
    
    
 });
 
-//////////////
+
 connection.on("Printnames1", function () {
 
     //$('#registerButton').hide();
@@ -40,11 +44,26 @@ connection.on("Printnames2", function () {
 
 });
 
+//////////////
+connection.on("IsButton1", function (message) {
 
+    
+    if (message == "yes") {
+        $("#messagesList").html("You have won!");
+    }
+    else
+    {
+        $('#one').prop('disabled', true);
+    }
+
+    
+});
+
+//////////////
 
 
 connection.start().then(function () {
-    document.getElementById("sendButton").disabled = false;
+    document.getElementById("sendButton").disabled = true;
 }).catch(function (err) {
     return console.error(err.toString());
 });
@@ -62,12 +81,21 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 
 
 document.getElementById("registerButton").addEventListener("click", function (event) {
-    //var user = document.getElementById("userInput").value;
-    //var message = document.getElementById("messageInput").value;
+    
     connection.invoke("Register").catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
 });
 
+///////////////
 
+document.getElementById("one").addEventListener("click", function (event) {
+
+    connection.invoke("B1").catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+
+///////////////
