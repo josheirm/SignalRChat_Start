@@ -56,7 +56,7 @@ namespace SignalRChat.Hubs
 
         
 
-        public async Task Register(string user, string message)
+        public async Task Register()
         {
            
                 Clients A_Client = new Clients();
@@ -69,7 +69,7 @@ namespace SignalRChat.Hubs
 
                 //hides button
                 //await Clients.All.SendAsync("ReceiveMessage", user, message);
-                await Clients.Client(Context.ConnectionId).SendAsync("IsRegister",user, message);
+                await Clients.Client(Context.ConnectionId).SendAsync("IsRegister");
 
 
             //EachGame Egame = new EachGame();

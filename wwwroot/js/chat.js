@@ -18,7 +18,7 @@ connection.on("ReceiveMessage", function (user, message) {
 
 
 
-connection.on("IsRegister", function (user, message) {
+connection.on("IsRegister", function () {
    
     $('#registerButton').hide();
    
@@ -41,7 +41,7 @@ connection.on("Printnames2", function () {
 });
 
 
-/////////////
+
 
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = false;
@@ -59,15 +59,15 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     });
     event.preventDefault();
 });
-///////////////
+
 
 document.getElementById("registerButton").addEventListener("click", function (event) {
-    var user = document.getElementById("userInput").value;
-    var message = document.getElementById("messageInput").value;
-    connection.invoke("Register", user, message).catch(function (err) {
+    //var user = document.getElementById("userInput").value;
+    //var message = document.getElementById("messageInput").value;
+    connection.invoke("Register").catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
 });
 
-///////////////////////
+
