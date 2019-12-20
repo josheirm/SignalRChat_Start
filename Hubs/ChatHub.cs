@@ -13,8 +13,8 @@ public class Clients
 
 public class EachGame
 {
-    public Clients Playerone { get; set; }
-    public Clients Playertwo { get; set; }
+    public String Playeroneconn { get; set; }
+    public String Playertwoconn { get; set; }
 }
 
 
@@ -29,7 +29,7 @@ namespace SignalRChat.Hubs
 
         public override Task OnConnectedAsync()
         {
-            //Clients.All.SendAsync("IsButton1", "no");
+            Clients.All.SendAsync("IsButton1", "no");
             return base.OnConnectedAsync();
         }
 
@@ -47,7 +47,7 @@ namespace SignalRChat.Hubs
         public static int integer = 0;
         public static readonly List<Clients> ClientList = new List<Clients>();
         //private static object _syncRoot = new object();
-        //private static readonly List<EachGame> games = new List<EachGame>();
+        public static readonly List<EachGame> Games = new List<EachGame>();
         //private static readonly Random random = new Random();
 
         //////////////
@@ -87,9 +87,9 @@ namespace SignalRChat.Hubs
                 await Clients.Client(Context.ConnectionId).SendAsync("IsRegister");
 
 
-            //EachGame Egame = new EachGame();
-           // Egame.Playerone.ConnectionId = "null";
-           // Egame.Playerone.Name = "a";
+            EachGame Egame = new EachGame();
+            Egame.Playeroneconn = null;
+            Egame.Playertwoconn = null;
             var breakout = 1;
             
             
@@ -103,14 +103,16 @@ namespace SignalRChat.Hubs
                     //not the current user
                     if (element.ConnectionId != Context.ConnectionId)
                     {
+                        //adds to game list, probably not needed
+                        Egame.Playeroneconn = Context.ConnectionId;
+                        Egame.Playertwoconn = element.ConnectionId;
+
+                        Games.Add(Egame);
+
                         //remove this in next for each loop
                         PlayerOneConnId = Context.ConnectionId;
-                        //found a player
-                        //Egame.Playertwo.ConnectionId = element.ConnectionId;
                         PlayerTwoConnId = element.ConnectionId;
 
-                        //adds to game list, probably not needed
-                        //games.Add(Egame);
                         //remove other player
                         ClientList.Remove(element);
 
