@@ -11,6 +11,9 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
 
+
+
+
 connection.on("ReceiveMessage", function (user, message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     var encodedMsg = user + " says " + msg;
@@ -27,6 +30,22 @@ connection.on("IsRegister", function () {
     $('#registerButton').hide();
    
    
+});
+
+connection.on("IsWaiting", function () {
+
+    
+    $('#registerButton').show();
+
+
+});
+
+
+connection.on("Printnames0", function () {
+
+    //$('#registerButton').hide();
+    $("#messagesList").html("                               ");
+
 });
 
 
