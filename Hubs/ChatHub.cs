@@ -70,79 +70,49 @@ namespace SignalRChat.Hubs
         
         
 
-        public override Task OnDisconnectedAsync(Exception e)
+    public override Task OnDisconnectedAsync(Exception e)
+    {
+        foreach (EachGame element in Games)
         {
-           
-
-
-
-                foreach (EachGame element in Games)
+            if (element.Playeroneconn == Context.ConnectionId)
+            {
+                //set page to none
+                element.Playeroneconn = null;
+                //both pages are now none
+                if (element.Playertwoconn == null)
                 {
-
-                    if (element.Playeroneconn == Context.ConnectionId)
-                    {
-
-
-
-
-                        //set page to none
-                        element.Playeroneconn = null;
-
-                        //both pages are now none
-                        if (element.Playertwoconn == null)
-                        {
-                            Games.Remove(element);
-                        }
-                        else if (element.Playertwoconn != "10")
-                        {
-                            //alter connection that stays 
-
-                            PlayerTwoConnId = null;
-                            //Clients.Client(element.Playertwoconn).SendAsync("Printnames0");
-                            Clients.Client(element.Playertwoconn).SendAsync("IsWaiting");
-
-                        }
-                        break;
-                    }
-
-                    else if (element.Playertwoconn == Context.ConnectionId)
-                    {
-
-
-
-                        //set page to none
-                        element.Playertwoconn = null;
-
-                        //both pages are now none
-                        if (element.Playeroneconn == null)
-                        {
-                            Games.Remove(element);
-                        }
-                        else if (element.Playeroneconn != "10")
-                        {
-                            //alter connection that stays
-                            PlayerOneConnId = null;
-                            //Clients.Client(element.Playeroneconn).SendAsync("Printnames0");
-                            Clients.Client(element.Playeroneconn).SendAsync("IsWaiting");
-                        }
-                        break;
-                    }
-
-
-
-
+                    Games.Remove(element);
                 }
-
-
-
-
-
-
-
-            
-            //Globals.SystemLogger.LogTrace($"Starting onDisconnectedAsync for user with connectionId {Context.ConnectionId}.");
-            return base.OnDisconnectedAsync(e);
+                else if (element.Playertwoconn != "10")
+                {
+                    //alter connection that stays 
+                    PlayerTwoConnId = null;
+                    //Clients.Client(element.Playertwoconn).SendAsync("Printnames0");
+                    Clients.Client(element.Playertwoconn).SendAsync("IsWaiting");
+                }
+                break;
+            }
+            else if (element.Playertwoconn == Context.ConnectionId)
+            {
+                //set page to none
+                element.Playertwoconn = null;
+                //both pages are now none
+                if (element.Playeroneconn == null)
+                {
+                    Games.Remove(element);
+                }
+                else if (element.Playeroneconn != "10")
+                {
+                    //alter connection that stays
+                    PlayerOneConnId = null;
+                    //Clients.Client(element.Playeroneconn).SendAsync("Printnames0");
+                    Clients.Client(element.Playeroneconn).SendAsync("IsWaiting");
+                }
+                break;
+            }
         }
+        return base.OnDisconnectedAsync(e);
+    }
 
         
 
@@ -156,93 +126,57 @@ namespace SignalRChat.Hubs
         
 
 
-        public async Task Register()
+    public async Task Register()
+    {
+        Clients A_Client = new Clients();
+        A_Client.ConnectionId = Context.ConnectionId;
+        A_Client.Name = "a";
+        ClientList.Add(A_Client);
+        //hides button
+        //await Clients.All.SendAsync("ReceiveMessage", user, message);
+        await Clients.Client(Context.ConnectionId).SendAsync("IsRegister");
+            
+        EachGame Egame = new EachGame();
+        Egame.Playeroneconn = null;
+        Egame.Playertwoconn = null;
+        var breakout = 1;
+           
+        foreach (Clients element in ClientList)
         {
-           
-                Clients A_Client = new Clients();
-                A_Client.ConnectionId = Context.ConnectionId;
-                A_Client.Name = "a";
-                ClientList.Add(A_Client);
-           
+            //not the current user - open page, gets removed after used
+            if (element.ConnectionId != Context.ConnectionId)
+            {
+                //adds to game list, probably not needed
+                Egame.Playeroneconn = Context.ConnectionId;
+                Egame.Playertwoconn = element.ConnectionId;
+                Games.Add(Egame);
 
-
-
-                //hides button
-                //await Clients.All.SendAsync("ReceiveMessage", user, message);
-                await Clients.Client(Context.ConnectionId).SendAsync("IsRegister");
-
-
-            EachGame Egame = new EachGame();
-            Egame.Playeroneconn = null;
-            Egame.Playertwoconn = null;
-            var breakout = 1;
-            
-            
-            
-           
-
-                foreach (Clients element in ClientList)
+                //remove this in next for each loop
+                PlayerOneConnId = Context.ConnectionId;
+                PlayerTwoConnId = element.ConnectionId;
+                //remove other player
+                ClientList.Remove(element);
+                //find the current player
+                foreach (Clients element2 in ClientList)
                 {
-                    //not the current user - open page, gets removed after used
-                    if (element.ConnectionId != Context.ConnectionId)
+                    if (element2.ConnectionId == Context.ConnectionId)
                     {
-                        //adds to game list, probably not needed
-                        Egame.Playeroneconn = Context.ConnectionId;
-                        Egame.Playertwoconn = element.ConnectionId;
-
-                        Games.Add(Egame);
-
-                        //remove this in next for each loop
-                        PlayerOneConnId = Context.ConnectionId;
-                        PlayerTwoConnId = element.ConnectionId;
-
-                   
-
-                    //remove other player
-                    ClientList.Remove(element);
-
-                        //find the current player
-                        foreach (Clients element2 in ClientList)
-                        {
-                            if (element2.ConnectionId == Context.ConnectionId)
-                            {
-                                //removes current player
-                                ClientList.Remove(element2);
-
-                            //assigns to connections to be named player one and player two
-                            await Clients.Client(PlayerOneConnId).SendAsync("Printnames2");
-                            await Clients.Client(PlayerTwoConnId).SendAsync("Printnames1");
-
-
-                            //propagates out of while loop
-                            breakout = 2;
-                            break;
-                               
-                            }
-                           
-                        }
-
-                    if (breakout == 2)
-                    { break; }
-
+                        //removes current player
+                        ClientList.Remove(element2);
+                        //assigns to connections to be named player one and player two
+                        await Clients.Client(PlayerOneConnId).SendAsync("Printnames2");
+                        await Clients.Client(PlayerTwoConnId).SendAsync("Printnames1");
+                        //breaks out of all braces 
+                        breakout = 2;
+                        break;
                     }
-
-
-                
+                           
+                }
+                if (breakout == 2)
+                { break; }
             }
-
-
-
-
-
-
-
-
-
-
-
-
         }
+    }
 
         ////////////
         public async Task B1()
