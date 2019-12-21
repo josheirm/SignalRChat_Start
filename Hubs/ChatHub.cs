@@ -90,7 +90,7 @@ namespace SignalRChat.Hubs
                     //Clients.Client(element.Playertwoconn).SendAsync("Printnames0");
                     Clients.Client(element.Playertwoconn).SendAsync("IsWaiting");
                 }
-                break;
+                break; 
             }
             else if (element.Playertwoconn == Context.ConnectionId)
             {
