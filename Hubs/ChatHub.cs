@@ -151,7 +151,7 @@ namespace SignalRChat.Hubs
         //when function is run and one client is disconnected with X on tab, other client acts as though the other client is still their and prints : 2nd user not your turn
 
         //why is Printnames2() executing like there are two clients and one client has been disconnected
-        public async Task Register()
+        public async Task Register() 
     {
         Clients A_Client = new Clients();
         A_Client.ConnectionId = Context.ConnectionId;
