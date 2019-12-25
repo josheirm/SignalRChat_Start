@@ -57,7 +57,7 @@ connection.on("Printnames1", function () {
 });
 
 connection.on("Printnames2", function () {
-
+    
     //$('#registerButton').hide();
     $("#messagesList").html("Player two its not your turn!");
 
