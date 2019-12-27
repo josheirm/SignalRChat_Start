@@ -44,7 +44,7 @@ connection.on("IsWaiting", function () {
 connection.on("Printnames0", function () {
 
     //$('#registerButton').hide();
-    $("#messagesList").html("                               ");
+    $("#messagesList").html("1  ");
 
 });
 
