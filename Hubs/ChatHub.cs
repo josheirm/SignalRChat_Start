@@ -77,12 +77,16 @@ namespace SignalRChat.Hubs
 
         public override Task OnDisconnectedAsync(Exception e)
         {
-            integer++;
-            
 
-                Clients.Group(groupname).SendAsync("Printnames0");
-                Clients.Group(groupname).SendAsync("IsWaiting");
+            var groupname1 = "";
+            for (int a = 0; a < integer; a++)
+            {
+                groupname1 = "group" + a;
 
+
+                Clients.Group(groupname1).SendAsync("Printnames0");
+                Clients.Group(groupname1).SendAsync("IsWaiting");
+            }
             
 
 
@@ -106,12 +110,12 @@ namespace SignalRChat.Hubs
         
         public async Task Register()
         {
-            if (firstregister == "1")
-            {
+            //if (firstregister == "1")
+            //{
                 groupname = "group" + integer;
-                integer++;
-                firstregister = "2";
-            }
+            //    integer++;
+            //    firstregister = "2";
+            //}
             
             
             
@@ -139,6 +143,7 @@ namespace SignalRChat.Hubs
                         //await2:
                         await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
                         await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
+                        integer++;
                         //firstregister = 1;
 
                         //remove other player
