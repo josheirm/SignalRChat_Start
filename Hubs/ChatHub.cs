@@ -79,7 +79,7 @@ namespace SignalRChat.Hubs
         {
 
             var groupname1 = "";
-            for (int a = 0; a < integer; a++)
+            for (int a = 0; a < integer; a++) 
             {
                 groupname1 = "group" + a;
 
