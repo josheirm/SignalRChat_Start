@@ -34,16 +34,17 @@ namespace SignalRChat.Hubs
     
     public class ChatHub : Hub
     {
-        public string groupname = "";
+        public static int integer = 0;
+        private String firstregister = "1";
+        public String groupname = "";
         public int amtplayers = 0;
-        public string PlayerOneConnId = "10";
-        public string PlayerTwoConnId = "10";
+        public String PlayerOneConnId = "10";
+        public String PlayerTwoConnId = "10";
         public int buttonAnswer = 1;
         public static int firststart = 1;
         public static int whoseturn = 0;
-        public static int integer = 0;
+        
         public static readonly List<Clients> ClientList = new List<Clients>();
-        //private static object _syncRoot = new object();
         public static readonly List<EachGame> Games = new List<EachGame>();
         //private static readonly Random random = new Random();
 
@@ -76,38 +77,16 @@ namespace SignalRChat.Hubs
 
         public override Task OnDisconnectedAsync(Exception e)
         {
+            integer++;
             
-                
+
+                Clients.Group(groupname).SendAsync("Printnames0");
+                Clients.Group(groupname).SendAsync("IsWaiting");
+
             
-                //Clients.Group("group1",PlayerOneConnId).Printnames0;
-                //Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
-                //Clients.User(PlayerTwoConnId).SendAsync("Printnames0");
-                //Clients.User(PlayerTwoConnId).SendAsync("IsWaiting");
 
 
-
-            //has been a delete
-            //string[] lines = { "1" };
-            //System.IO.File.WriteAllLines(@"C:\Users\Public\WriteText.txt", lines);
-            ////string[] UserLeft = { "1" };
-
-            ////which player was deleted
-            //if (PlayerOneConnId == Context.ConnectionId)
-            //{
-            //    string[] UserLeft = { "1" };
-            //    System.IO.File.WriteAllLines(@"C:\Users\Public\UserLeft.txt", lines);
-
-
-            //}
-
-
-            //else
-            //{
-            //    string[] UserLeft = { "2" };
-            //    System.IO.File.WriteAllLines(@"C:\Users\Public\UserLeft.txt", lines);
-
-            //}
-
+            
 
 
             return base.OnDisconnectedAsync(e);
@@ -124,66 +103,18 @@ namespace SignalRChat.Hubs
 
 
 
-        //when function is run and one client is disconnected with X on tab, other client acts as though the other client is still their and prints : 2nd user not your turn
-
-        //why is Printnames2() executing like there are two clients and one client has been disconnected
+        
         public async Task Register()
         {
-            //string groupname = "group" + integer;
-
-            //amtplayers++;
-            //string text = System.IO.File.ReadAllText(@"C:\Users\Public\WriteText.txt");
-            ////reset so delete took place already and if set back to one is a delete
-            //string[] lines = { "0" };
-            //System.IO.File.WriteAllLines(@"C:\Users\Public\WriteText.txt", lines);
-
-
-            ////is a deleted
-            //if (text == "1\r\n")
-            //{
-            //    //wihch user deleted
-            //    string text2 = System.IO.File.ReadAllText(@"C:\Users\Public\UserLeft.txt");
-            //    string[] lines2 = { "0" };
-            //    System.IO.File.WriteAllLines(@"C:\Users\Public\UserLeft.txt", lines2);
-            //    string remainingplayer = "0";
-            //    string holder = "A";
-            //    //find client to delete
-            //    if (text2 == "1\r\n")
-            //    {
-            //        //to delete
-            //        holder = PlayerOneConnId;
-            //        remainingplayer = PlayerTwoConnId;
-            //        //Clients.Caller.SendAsync("IsWaiting");
-            //        await Clients.Group("group1").SendAsync("Printnames0");
-
-            //    }
-            //    // file holds 2
-            //    else
-            //    {   //to delete
-            //        holder = PlayerTwoConnId;
-            //        remainingplayer = PlayerOneConnId;
-            //        //Clients.Caller.SendAsync("IsWaiting");
-            //        await Clients.Group("group1").SendAsync("Printnames0");
-
-            //    }
-            //    //removes correct client
-            //    for (int i = ClientList.Count - 1; i >= 0; --i)
-            //    {
-            //        if (ClientList[i].ConnectionId == holder)
-            //        {
-            //            ClientList.RemoveAt(i);
-            //            await Groups.RemoveFromGroupAsync(holder, "group1");
-            //            break;
-            //        }
-            //    }
-            //    //clear text of remaining client
-            //    //Clients.Group("group1").SendAsync("Printnames0");
-            //    ///remaining player, above removed disconnected
-            //    //Clients.Group("group1").SendAsync("Printnames0");
-            //    //return (1);
-            //}
-            //else
-            {//end is deleted 
+            if (firstregister == "1")
+            {
+                groupname = "group" + integer;
+                integer++;
+                firstregister = "2";
+            }
+            
+            
+            
 
                 Clients A_Client = new Clients();
                 A_Client.ConnectionId = Context.ConnectionId;
@@ -206,8 +137,9 @@ namespace SignalRChat.Hubs
                         PlayerOneConnId = Context.ConnectionId;
 
                         //await2:
-                        await Groups.AddToGroupAsync(PlayerTwoConnId, "group1");
-                        await Groups.AddToGroupAsync(PlayerOneConnId, "group1");
+                        await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
+                        await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
+                        //firstregister = 1;
 
                         //remove other player
                         ClientList.RemoveAt(k);
@@ -238,11 +170,11 @@ namespace SignalRChat.Hubs
 
                     }
                 }
-                //return (1);
-            }
+                
+            
         }
 
-        ////////////
+       
         public async Task B1()
         {
             if (buttonAnswer == 11)
@@ -255,13 +187,7 @@ namespace SignalRChat.Hubs
                 await Clients.All.SendAsync("IsButton1", "no");
             }
         }
-            //await Clients.All.SendAsync("ReceiveMessage", user, message);
            
-
-        
-
-        ///////////
-
     }
 
 
