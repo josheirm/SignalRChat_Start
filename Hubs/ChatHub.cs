@@ -14,6 +14,7 @@ public class EachGame
 {
     public String Playeroneconn { get; set; }
     public String Playertwoconn { get; set; }
+    public String Groupname { get; set; }
 }
 
 public class Variables
@@ -68,7 +69,11 @@ namespace SignalRChat.Hubs
 
         }
 
-
+        public void GetGroups()
+        {
+            integer++;
+            groupname = "group" + integer;
+        }
 
 
 
@@ -76,8 +81,43 @@ namespace SignalRChat.Hubs
 
         public override Task OnDisconnectedAsync(Exception e)
         {
+            int flag = 0;
+            //List<EachGame> Games = new List<EachGame>();
+            ///ClientList CList2 = new ClientList;
+            //Clients A_Client = new Clients();
+            //A_Client.ConnectionId = Context.ConnectionId;
+            //A_Client.Name = "a";
 
 
+            string Cone1 = "";
+            string Cone2 = "";
+            string Group = "";
+            int index = 0;
+            for (int i = 0; i < Games.Count; i++)
+            {
+                if (Games[i].Playeroneconn == Context.ConnectionId)
+                {
+                    Cone1 = Games[i].Playeroneconn;
+                    Cone2 = Games[i].Playertwoconn;
+                    Group = Games[i].Groupname;
+                    Groups.RemoveFromGroupAsync(Cone1, Group);
+                    index = i;
+                    flag = 1;
+                    break;
+                }
+                if (Games[i].Playertwoconn == Context.ConnectionId)
+                {
+                    Cone1 = Games[i].Playeroneconn;
+                    Cone2 = Games[i].Playertwoconn;
+                    Group = Games[i].Groupname;
+                    Groups.RemoveFromGroupAsync(Cone2, Group);
+                    index = i;
+                    flag = 1;
+                    break;
+                }
+                
+                //ClientList2[i].ConnectionId = ClientList[i].ConnectionId;
+            }
             //is Context.ConnectionId is this the disconeected client?
             //Who is remaining client? 
 
@@ -90,17 +130,21 @@ namespace SignalRChat.Hubs
             //strangely, and removing any broadcast can seem to solve the 
             //problem.
 
-            
+
             //Groups.RemoveFromGroupAsync(PlayerTwoConnId, groupname);
             //Clients.Client(Context.ConnectionId).SendAsync("Printnames0");
 
             //groupname doesn't retain value
             //blanks out diplay
-            Clients.Group(groupname).SendAsync("Printnames0");
-            //no longer a pair so needs a new register button
-            Clients.Group(groupname).SendAsync("IsWaiting");
 
+            if (flag == 1)
+            {
+                Clients.Group(Group).SendAsync("Printnames0");
+                //no longer a pair so needs a new register button
+                Clients.Group(Group).SendAsync("IsWaiting");
 
+                Games.RemoveAt(index);
+            }
 
 
 
@@ -154,7 +198,13 @@ namespace SignalRChat.Hubs
                         PlayerTwoConnId = ClientList[k].ConnectionId;
                         PlayerOneConnId = Context .ConnectionId;
 
-                        
+                    GetGroups();
+                    EachGame Game1 = new EachGame();
+                    Game1.Playeroneconn = PlayerOneConnId;
+                    Game1.Playertwoconn = PlayerTwoConnId;
+                    Game1.Groupname = groupname;
+                    Games.Add(Game1);
+
                         await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
                         await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
                         integer++;
