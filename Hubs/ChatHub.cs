@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System;
 
 
-
 public class Clients
 {
     public string ConnectionId { get; set; }
@@ -36,7 +35,7 @@ namespace SignalRChat.Hubs
     {
         public static int integer = 0;
         private String firstregister = "1";
-        public String groupname = "";
+        public String groupname = "A";
         public int amtplayers = 0;
         public String PlayerOneConnId = "10";
         public String PlayerTwoConnId = "10";
@@ -78,19 +77,33 @@ namespace SignalRChat.Hubs
         public override Task OnDisconnectedAsync(Exception e)
         {
 
-            var groupname1 = "";
-            for (int a = 0; a < integer; a++) 
-            {
-                groupname1 = "group" + a;
 
+            //is Context.ConnectionId is this the disconeected client?
+            //Who is remaining client? 
 
-                Clients.Group(groupname1).SendAsync("Printnames0");
-                Clients.Group(groupname1).SendAsync("IsWaiting");
-            }
+            //perhaps check which player is remaining and use
+            //a list with playeroneconnid and playertwoconnid
+            //and their group, Would a list work in this function
+            //global variables don't!
+
+            //however when the program gets large it starts to act
+            //strangely, and removing any broadcast can seem to solve the 
+            //problem.
+
             
+            //Groups.RemoveFromGroupAsync(PlayerTwoConnId, groupname);
+            //Clients.Client(Context.ConnectionId).SendAsync("Printnames0");
+
+            //groupname doesn't retain value
+            //blanks out diplay
+            Clients.Group(groupname).SendAsync("Printnames0");
+            //no longer a pair so needs a new register button
+            Clients.Group(groupname).SendAsync("IsWaiting");
 
 
-            
+
+
+
 
 
             return base.OnDisconnectedAsync(e);
@@ -110,10 +123,11 @@ namespace SignalRChat.Hubs
         
         public async Task Register()
         {
+            //doesn't work
             //if (firstregister == "1")
             //{
-                groupname = "group" + integer;
-            //    integer++;
+            //    groupname = "group" + integer;
+            //    //integer++;
             //    firstregister = "2";
             //}
             
@@ -138,9 +152,9 @@ namespace SignalRChat.Hubs
                     if ((ClientList[k].ConnectionId) != (Context.ConnectionId))
                     {
                         PlayerTwoConnId = ClientList[k].ConnectionId;
-                        PlayerOneConnId = Context.ConnectionId;
+                        PlayerOneConnId = Context .ConnectionId;
 
-                        //await2:
+                        
                         await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
                         await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
                         integer++;
