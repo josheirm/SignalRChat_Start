@@ -96,7 +96,14 @@ namespace SignalRChat.Hubs
 
 
         }
+        //IsButton1_1
+        //IsButton1_2
+
         public void B1()
+        {
+            Buttonhandler("IsButton1_1", "IsButton1_2");
+        }
+        public void Buttonhandler(string button1text, string button2text )
         {
             string whoseturnisnt = "";
             if(whoseturn == PlayerOneConnId)
@@ -112,12 +119,13 @@ namespace SignalRChat.Hubs
             if (Context.ConnectionId == whoseturn)
             {
                 //correct guess
-                if (buttonAnswer == 1)
+                if (buttonAnswer == 2)
                 {
                     //winner
-                    Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
+                    //Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
+                    Clients.Client(whoseturn).SendAsync(button1text, "won");
                     //loser
-                    Clients.Client(whoseturnisnt).SendAsync("IsButton1_2", "won");
+                    Clients.Client(whoseturnisnt).SendAsync(button2text, "won");
                     DisconnectGame();
 
                 }
@@ -127,10 +135,12 @@ namespace SignalRChat.Hubs
                     //await Clients.All.SendAsync("IsButton1", "no");
                     Changeturn();
                     Printturn();
-                    Clients.Client(PlayerOneConnId).SendAsync("IsButton1_1", "other");
-                    Clients.Client(PlayerTwoConnId).SendAsync("IsButton1_2", "other");
-                    Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
-                    Clients.Client(PlayerTwoConnId).SendAsync("IsWaiting");
+                    //Clients.Client(PlayerOneConnId).SendAsync("IsButton1_1", "other");
+                    //Clients.Client(PlayerTwoConnId).SendAsync("IsButton1_2", "other");
+                    Clients.Client(PlayerOneConnId).SendAsync(button1text, "other");
+                    Clients.Client(PlayerTwoConnId).SendAsync(button2text, "other");
+                    //Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
+                    //Clients.Client(PlayerTwoConnId).SendAsync("IsWaiting");
 
                 }
             }
