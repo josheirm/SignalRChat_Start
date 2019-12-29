@@ -64,21 +64,29 @@ connection.on("Printnames2", function () {
 });
 
 //////////////
-connection.on("IsButton1", function (message) {
-
-
-    if (message == "yes") {
+connection.on("IsButton1_1", function (message) {
+    if (message == "won") {
         $("#messagesList").html("You have won!");
+
     }
     else {
+        //$("#messagesList").html("You have lost!");
+
         $('#one').prop('disabled', true);
     }
-
-
 });
 
-//////////////
+connection.on("IsButton1_2", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have lost!");
 
+    }
+    else {
+        //$("#messagesList").html("You have lost!");
+
+        $('#one').prop('disabled', true);
+    } 
+});
 
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = true;

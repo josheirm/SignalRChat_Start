@@ -40,7 +40,7 @@ namespace SignalRChat.Hubs
         public int amtplayers = 0;
         public static string PlayerOneConnId = "10";
         public static string PlayerTwoConnId = "10";
-        public int buttonAnswer = 2;
+        public int buttonAnswer = 1;
         public static int firststart = 1;
 
 
@@ -49,15 +49,77 @@ namespace SignalRChat.Hubs
         //private static readonly Random random = new Random();
         Variables var = new Variables();
 
+
+        public void DisconnectGame()
+        {
+            int flag = 0;
+            string Cone1 = "";
+            string Cone2 = "";
+            string Group = "";
+            int index = 0;
+            for (int i = 0; i < Games.Count; i++)
+            {
+                //find the game
+                if (Games[i].Playeroneconn == Context.ConnectionId)
+                {
+                    Cone1 = Games[i].Playeroneconn;
+                    Cone2 = Games[i].Playertwoconn;
+                    Group = Games[i].Groupname;
+                    
+                    index = i;
+                    flag = 1;
+                    break;
+                }
+                //if (Games[i].Playertwoconn == Context.ConnectionId)
+                //{
+                //    Cone1 = Games[i].Playeroneconn;
+                //    Cone2 = Games[i].Playertwoconn;
+                //    Group = Games[i].Groupname;
+                //    Groups.RemoveFromGroupAsync(Cone2, Group);
+                //    index = i;
+                //    flag = 1;
+                //    break;
+                //}
+
+            }
+
+
+            if (flag == 1)
+            {
+                //Clients.Group(Group).SendAsync("Printnames0");
+                //no longer a pair so needs a new register button
+                Clients.Group(Group).SendAsync("IsWaiting");
+                Groups.RemoveFromGroupAsync(Cone1, Group);
+                Groups.RemoveFromGroupAsync(Cone2, Group);
+                Games.RemoveAt(index);
+            }
+
+
+        }
         public void B1()
         {
+            string whoseturnisnt = "";
+            if(whoseturn == PlayerOneConnId)
+            {
+                whoseturnisnt = PlayerTwoConnId;
+            }
+            else
+            {
+                whoseturnisnt = PlayerOneConnId;
+            
+            }
+            //only continues if player here is their turn
             if (Context.ConnectionId == whoseturn)
             {
                 //correct guess
                 if (buttonAnswer == 1)
                 {
-                    Clients.Client(Context.ConnectionId).SendAsync("IsButton1", "yes");
-                    //await Clients.Client(PlayerTwoConnId).SendAsync("IsButton1", "yes");
+                    //winner
+                    Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
+                    //loser
+                    Clients.Client(whoseturnisnt).SendAsync("IsButton1_2", "won");
+                    DisconnectGame();
+
                 }
                 //incorrect guess
                 else
@@ -65,6 +127,11 @@ namespace SignalRChat.Hubs
                     //await Clients.All.SendAsync("IsButton1", "no");
                     Changeturn();
                     Printturn();
+                    Clients.Client(PlayerOneConnId).SendAsync("IsButton1_1", "other");
+                    Clients.Client(PlayerTwoConnId).SendAsync("IsButton1_2", "other");
+                    Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
+                    Clients.Client(PlayerTwoConnId).SendAsync("IsWaiting");
+
                 }
             }
         }
@@ -91,7 +158,7 @@ namespace SignalRChat.Hubs
 
         public void Printturn()
         {
-            if (whoseturn == Context.ConnectionId)
+            if (whoseturn == PlayerOneConnId)
             {
                 Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
                 Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
@@ -129,13 +196,6 @@ namespace SignalRChat.Hubs
         public override Task OnDisconnectedAsync(Exception e)
         {
             int flag = 0;
-            //List<EachGame> Games = new List<EachGame>();
-            ///ClientList CList2 = new ClientList;
-            //Clients A_Client = new Clients();
-            //A_Client.ConnectionId = Context.ConnectionId;
-            //A_Client.Name = "a";
-
-
             string Cone1 = "";
             string Cone2 = "";
             string Group = "";
