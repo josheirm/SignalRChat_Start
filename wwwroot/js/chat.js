@@ -49,7 +49,7 @@ connection.on("Printnames0", function () {
 });
 
 
-connection.on("Printnames1", function () {
+connection.on("Printnames1", function () { 
 
     //$('#registerButton').hide();
     $("#messagesList").html("It's your turn!!");
