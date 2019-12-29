@@ -26,15 +26,15 @@ connection.on("ReceiveMessage", function (user, message) {
 
 connection.on("IsRegister", function () {
 
-    
+
     $('#registerButton').hide();
-   
-   
+
+
 });
 
 connection.on("IsWaiting", function () {
 
-    
+
     $('#registerButton').show();
 
 
@@ -52,30 +52,29 @@ connection.on("Printnames0", function () {
 connection.on("Printnames1", function () {
 
     //$('#registerButton').hide();
-    $("#messagesList").html("Player one its your turn!");
+    $("#messagesList").html("It's your turn!!");
 
 });
 
 connection.on("Printnames2", function () {
-    
+
     //$('#registerButton').hide();
-    $("#messagesList").html("Player two its not your turn!");
+    $("#messagesList").html("It's not your turn!!");
 
 });
 
 //////////////
 connection.on("IsButton1", function (message) {
 
-    
+
     if (message == "yes") {
         $("#messagesList").html("You have won!");
     }
-    else
-    {
+    else {
         $('#one').prop('disabled', true);
     }
 
-    
+
 });
 
 //////////////
@@ -100,7 +99,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 
 
 document.getElementById("registerButton").addEventListener("click", function (event) {
-    
+
     connection.invoke("Register").catch(function (err) {
         return console.error(err.toString());
     });
