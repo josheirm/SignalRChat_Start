@@ -63,30 +63,118 @@ connection.on("Printnames2", function () {
 
 });
 
-//////////////
+////
+
+connection.on("Enablebuttons", function () {
+
+    
+    $('#one').prop('disabled', false);
+    $('#two').prop('disabled', false);
+    $('#three').prop('disabled', false);
+    $('#four').prop('disabled', false);
+    $('#five').prop('disabled', false);
+    
+
+});
+
+////
+
 connection.on("IsButton1_1", function (message) {
-    if (message == "won") {
+    if (message == "won")
+    {
         $("#messagesList").html("You have won!");
-
     }
-    else {
-        //$("#messagesList").html("You have lost!");
-
+    else
+    {
         $('#one').prop('disabled', true);
     }
 });
 
 connection.on("IsButton1_2", function (message) {
-    if (message == "won") {
+    if (message == "won")
+    {
         $("#messagesList").html("You have lost!");
-
     }
-    else {
-        //$("#messagesList").html("You have lost!");
-
+    else
+    {
         $('#one').prop('disabled', true);
     } 
 });
+////////////////
+
+connection.on("IsButton2_1", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have won!");
+    }
+    else {
+        $('#two').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton2_2", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have lost!");
+    }
+    else {
+        $('#two').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton3_1", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have won!");
+    }
+    else {
+        $('#three').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton3_2", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have lost!");
+    }
+    else {
+        $('#three').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton4_1", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have won!");
+    }
+    else {
+        $('#four').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton4_2", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have lost!");
+    }
+    else {
+        $('#four').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton5_1", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have won!");
+    }
+    else {
+        $('#five').prop('disabled', true);
+    }
+});
+
+connection.on("IsButton5_2", function (message) {
+    if (message == "won") {
+        $("#messagesList").html("You have lost!");
+    }
+    else {
+        $('#five').prop('disabled', true);
+    }
+});
+
+////////////////
 
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = true;
@@ -114,11 +202,43 @@ document.getElementById("registerButton").addEventListener("click", function (ev
     event.preventDefault();
 });
 
-///////////////
 
 document.getElementById("one").addEventListener("click", function (event) {
 
     connection.invoke("B1").catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+
+///////////////
+document.getElementById("two").addEventListener("click", function (event) {
+
+    connection.invoke("B2").catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+
+document.getElementById("three").addEventListener("click", function (event) {
+
+    connection.invoke("B3").catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+
+document.getElementById("four").addEventListener("click", function (event) {
+
+    connection.invoke("B4").catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+
+document.getElementById("five").addEventListener("click", function (event) {
+
+    connection.invoke("B5").catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();

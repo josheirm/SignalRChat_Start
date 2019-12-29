@@ -40,13 +40,13 @@ namespace SignalRChat.Hubs
         public int amtplayers = 0;
         public static string PlayerOneConnId = "10";
         public static string PlayerTwoConnId = "10";
-        public int buttonAnswer = 1;
+        public static int buttonAnswer = 5;
         public static int firststart = 1;
 
 
         public static readonly List<Clients> ClientList = new List<Clients>();
         public static readonly List<EachGame> Games = new List<EachGame>();
-        //private static readonly Random random = new Random();
+        public static readonly Random random = new Random();
         Variables var = new Variables();
 
 
@@ -70,16 +70,16 @@ namespace SignalRChat.Hubs
                     flag = 1;
                     break;
                 }
-                //if (Games[i].Playertwoconn == Context.ConnectionId)
-                //{
-                //    Cone1 = Games[i].Playeroneconn;
-                //    Cone2 = Games[i].Playertwoconn;
-                //    Group = Games[i].Groupname;
-                //    Groups.RemoveFromGroupAsync(Cone2, Group);
-                //    index = i;
-                //    flag = 1;
-                //    break;
-                //}
+                if (Games[i].Playertwoconn == Context.ConnectionId)
+                {
+                    Cone1 = Games[i].Playeroneconn;
+                    Cone2 = Games[i].Playertwoconn;
+                    Group = Games[i].Groupname;
+                    //Groups.RemoveFromGroupAsync(Cone2, Group);
+                    index = i;
+                    flag = 1;
+                    break;
+                }
 
             }
 
@@ -101,9 +101,33 @@ namespace SignalRChat.Hubs
 
         public void B1()
         {
-            Buttonhandler("IsButton1_1", "IsButton1_2");
+            Buttonhandler("IsButton1_1", "IsButton1_2", 1);
         }
-        public void Buttonhandler(string button1text, string button2text )
+
+        //
+        public void B2()
+        {
+            Buttonhandler("IsButton2_1", "IsButton2_2", 2);
+        }
+
+        public void B3()
+        {
+            Buttonhandler("IsButton3_1", "IsButton3_2", 3);
+        }
+
+        public void B4()
+        {
+            Buttonhandler("IsButton4_1", "IsButton4_2", 4);
+        }
+
+        public void B5()
+        {
+            Buttonhandler("IsButton5_1", "IsButton5_2", 5);
+        }
+
+        //
+
+        public void Buttonhandler(string button1text, string button2text, int buttonnumpressed )
         {
             string whoseturnisnt = "";
             if(whoseturn == PlayerOneConnId)
@@ -119,7 +143,7 @@ namespace SignalRChat.Hubs
             if (Context.ConnectionId == whoseturn)
             {
                 //correct guess
-                if (buttonAnswer == 2)
+                if (buttonAnswer == buttonnumpressed)
                 {
                     //winner
                     //Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
@@ -190,7 +214,7 @@ namespace SignalRChat.Hubs
             }
             else
             {
-                whoseturn = PlayerTwoConnId;
+                whoseturn = PlayerOneConnId;
             }
         }
         public void GetGroups()
@@ -265,7 +289,7 @@ namespace SignalRChat.Hubs
 
 
         public async Task Register()
-        {
+         {
 
            
 
@@ -300,6 +324,7 @@ namespace SignalRChat.Hubs
                     Game1.Groupname = groupname;
                     Games.Add(Game1);
 
+                    
                     await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
                     await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
                     integer++;
@@ -329,7 +354,9 @@ namespace SignalRChat.Hubs
                         await Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
                         whoseturn = PlayerOneConnId.ToString();
                         await Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
-
+                        await Clients.Client(PlayerOneConnId).SendAsync("Enablebuttons");
+                        await Clients.Client(PlayerTwoConnId).SendAsync("Enablebuttons");
+                        buttonAnswer = random.Next(1,6);
 
                         break;
                     }
