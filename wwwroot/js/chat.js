@@ -52,14 +52,14 @@ connection.on("Printnames0", function () {
 connection.on("Printnames1", function () {
 
     //$('#registerButton').hide();
-    $("#messagesList").html("Player one its your turn!");
+    $("#messagesList").html("Plaaayer one its your turn!");
 
 });
 
 connection.on("Printnames2", function () {
     
     //$('#registerButton').hide();
-    $("#messagesList").html("Player two its not your turn!");
+    $("#messagesList").html("Palayer two its not your turn!");
 
 });
 
