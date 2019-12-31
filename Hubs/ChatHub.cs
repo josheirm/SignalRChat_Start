@@ -28,18 +28,18 @@ public class Variables
 
 namespace SignalRChat.Hubs
 {
-
-
     public class ChatHub : Hub
     {
-        
-        private static string whoseturn;
+        public String PlayerOneConnId = "10";
+        public String PlayerTwoConnId = "10";
+
+
+        private static String whoseturn;
         public static int integer = 0;
-        private String firstregister = "1";
+        //private String firstregister = "1";
         public String groupname = "A";
         public int amtplayers = 0;
-        public static string PlayerOneConnId = "10";
-        public static string PlayerTwoConnId = "10";
+        
         public static int buttonAnswer = 5;
         public static int firststart = 1;
 
@@ -289,12 +289,7 @@ namespace SignalRChat.Hubs
 
 
         public async Task Register()
-         {
-
-           
-
-           
-
+        {
             Clients A_Client = new Clients();
             A_Client.ConnectionId = Context.ConnectionId;
             //A_Client.Name = "a";
