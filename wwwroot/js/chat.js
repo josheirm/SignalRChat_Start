@@ -79,7 +79,7 @@ connection.on("Enablebuttons", function () {
 
 ////
 
-connection.on("IsButton1_1", function (message) {
+connection.on("IsButton1_1", function () {
     if (message == "won")
     {
         $("#messagesList").html("You have won!");
@@ -90,7 +90,7 @@ connection.on("IsButton1_1", function (message) {
     }
 });
 
-connection.on("IsButton1_2", function (message) {
+connection.on("IsButton1_2", function () {
     if (message == "won")
     {
         $("#messagesList").html("You have lost!");
@@ -175,7 +175,22 @@ connection.on("IsButton5_2", function (message) {
 });
 
 ////////////////
+//connection.on("SetVars", function (message, player1conn, player2conn)
+//{
+//    Player1connection = player1conn;
+//    Player2connection = player2conn;
+//});
 
+//connection.on("GetVars", function () {
+//    connection.Invoke("Receivevars", Player1connection, Player2connection );
+//});
+
+//connection.on("GetVariables", function (P1conn, p2conn) {
+    
+//});
+
+
+//////////////
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = true;
 }).catch(function (err) {
