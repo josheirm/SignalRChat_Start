@@ -1,8 +1,10 @@
 ﻿"use strict";
 
-
-
+//connection variables for get/set
+var P1conn = "0";
+var P2conn = "0";
 var integer = 0;
+var Turn = "";
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 
@@ -22,6 +24,23 @@ connection.on("ReceiveMessage", function (user, message) {
     document.getElementById("messagesList").appendChild(li);
 });
 
+//////////
+connection.on("SetVariable", function (user1, user2, turnis) {
+    P1conn = user1
+    P2conn = user2
+    Turn = turnis;
+});
+
+
+connection.on("GetVariable", function () {
+    //connection.invoke("Register").catch(function (err) {
+    //connection.invoke("Buttonhandler2", P1conn, P2conn, Turn).catch(function (err) {
+        //return console.error(err.toString());
+    });
+    //connection.invoke("Getvars", P1conn, P2conn);
+});
+
+//////////
 
 
 connection.on("IsRegister", function () {
@@ -195,15 +214,16 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 
 
 document.getElementById("registerButton").addEventListener("click", function (event) {
-
-    connection.invoke("Register").catch(function (err) {
-        return console.error(err.toString());
+    //connection.invoke("Buttonhandler2", P1conn, P2conn, Turn).catch(function (err) {
+    //connection.invoke("Register").catch(function (err) {
+        //return console.error(err.toString());
     });
     event.preventDefault();
 });
 
 
 document.getElementById("one").addEventListener("click", function (event) {
+
 
     connection.invoke("B1").catch(function (err) {
         return console.error(err.toString());
@@ -222,7 +242,8 @@ document.getElementById("two").addEventListener("click", function (event) {
 
 document.getElementById("three").addEventListener("click", function (event) {
 
-    connection.invoke("B3").catch(function (err) {
+    connection.invoke("Buttonhandler2", P1conn, P2conn, Turn).catch(function (err) {
+    //connection.invoke("B3").catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();

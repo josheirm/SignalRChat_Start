@@ -17,10 +17,6 @@ public class EachGame
     public String Groupname { get; set; }
 }
 
-public class Variables
-{
-    public string whoseturn { get; set; }
-}
 
 
 
@@ -28,6 +24,13 @@ public class Variables
 
 namespace SignalRChat.Hubs
 {
+
+    public class Variables
+    {
+        public string whoseturn { get; set; }
+    }
+
+
     public class ChatHub : Hub
     {
         public String PlayerOneConnId = "10";
@@ -39,16 +42,21 @@ namespace SignalRChat.Hubs
         //private String firstregister = "1";
         public String groupname = "A";
         public int amtplayers = 0;
-        
-        public static int buttonAnswer = 5;
+
+        public static int buttonAnswer = 1;
         public static int firststart = 1;
 
 
         public static readonly List<Clients> ClientList = new List<Clients>();
         public static readonly List<EachGame> Games = new List<EachGame>();
         public static readonly Random random = new Random();
-        Variables var = new Variables();
+        //Variables var = new Variables();
 
+
+        public ChatHub()
+        {
+           
+        }
 
         public void DisconnectGame()
         {
@@ -101,6 +109,7 @@ namespace SignalRChat.Hubs
 
         public void B1()
         {
+            
             Buttonhandler("IsButton1_1", "IsButton1_2", 1);
         }
 
@@ -127,47 +136,84 @@ namespace SignalRChat.Hubs
 
         //
 
-        public void Buttonhandler(string button1text, string button2text, int buttonnumpressed )
+        public void Buttonhandler(string button1text, string button2text, int buttonnumpressed)
         {
-            string whoseturnisnt = "";
-            if(whoseturn == PlayerOneConnId)
-            {
-                whoseturnisnt = PlayerTwoConnId;
-            }
-            else
-            {
-                whoseturnisnt = PlayerOneConnId;
-            
-            }
-            //only continues if player here is their turn
-            if (Context.ConnectionId == whoseturn)
-            {
-                //correct guess
-                if (buttonAnswer == buttonnumpressed)
-                {
-                    //winner
-                    //Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
-                    Clients.Client(whoseturn).SendAsync(button1text, "won");
-                    //loser
-                    Clients.Client(whoseturnisnt).SendAsync(button2text, "won");
-                    DisconnectGame();
 
+
+            //use for loop with context.connectid for this and than pass variables to 
+            //function.  Keep this in mind for other variables that arn'r connections
+            ///////////////
+
+            int flag1 = 0;
+            //PlayerTwoConnId = null;
+            var Group = "";
+            for (int i = 0; i < Games.Count; i++)
+            {
+                //find the game
+                if ((Games[i].Playeroneconn == Context.ConnectionId) || (Games[i].Playertwoconn == Context.ConnectionId))
+                {
+                    PlayerOneConnId = Games[i].Playeroneconn;
+                    PlayerTwoConnId = Games[i].Playertwoconn;
+                    Group = Games[i].Groupname;
+                    flag1 = 1;
+                    break;
                 }
-                //incorrect guess
+            }
+                if (flag1 == 1)
+                {
+                    //////////
+                    //Clients.Client(PlayerOneConnId).SendAsync("GetVariable");
+                    //Clients.Client(PlayerTwoConnId).SendAsync("GetVariable");
+                    ////////////
+                }
+
+            }
+        
+        public void Buttonhandler2(string PlayerOneConnId, string PlayerTwoConnId, string whoseturn)
+        { 
+
+          
+                
+
+                string whoseturnisnt = "";
+                if (whoseturn == PlayerTwoConnId)
+                {
+                    whoseturnisnt = PlayerOneConnId;
+                }
                 else
                 {
-                    //await Clients.All.SendAsync("IsButton1", "no");
-                    Changeturn();
-                    Printturn();
-                    //Clients.Client(PlayerOneConnId).SendAsync("IsButton1_1", "other");
-                    //Clients.Client(PlayerTwoConnId).SendAsync("IsButton1_2", "other");
-                    Clients.Client(PlayerOneConnId).SendAsync(button1text, "other");
-                    Clients.Client(PlayerTwoConnId).SendAsync(button2text, "other");
-                    //Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
-                    //Clients.Client(PlayerTwoConnId).SendAsync("IsWaiting");
+                    whoseturnisnt = PlayerTwoConnId;
 
                 }
-            }
+                //only continues if player here is their turn
+                if (Context.ConnectionId == whoseturn)
+                {
+                    //correct guess
+                    if (buttonAnswer == 1)//buttonnumpressed)
+                    {
+                        //winner
+                        
+                        //Clients.Client(whoseturn).SendAsync(button1text, "won");
+                        //loser
+                        //Clients.Client(whoseturnisnt).SendAsync(button2text, "won");
+                        DisconnectGame();
+
+                    }
+                    //incorrect guess
+                    else
+                    {
+                        
+                        Changeturn(PlayerOneConnId, PlayerTwoConnId);
+                        Printturn(PlayerOneConnId, PlayerTwoConnId);
+                        
+                        //Clients.Client(PlayerOneConnId).SendAsync(button1text, "other");
+                        //Clients.Client(PlayerTwoConnId).SendAsync(button2text, "other");
+                        
+
+                    }
+                }
+            
+       
         }
 
 
@@ -184,13 +230,8 @@ namespace SignalRChat.Hubs
 
 
 
-        public ChatHub()
-        {
-
-            //whoseturn = "";
-        }
-
-        public void Printturn()
+        
+        public void Printturn(String PlayerOneConnId, String PlayerTwoConnId)
         {
             if (whoseturn == PlayerOneConnId)
             {
@@ -205,7 +246,7 @@ namespace SignalRChat.Hubs
 
             }
         }
-        public void Changeturn()
+        public void Changeturn(String PlayerOneConnId, String PlayerTwoConnId)
         {
 
             if (whoseturn == PlayerOneConnId)
@@ -284,13 +325,20 @@ namespace SignalRChat.Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", user, message);
 
         }
+        ///
 
+        public async Task Getvars(string Userconn1, string Userconn2)
+        {
+            PlayerOneConnId = Userconn1;
+            PlayerOneConnId = Userconn2;
+        }
 
-
-
+        ///
         public async Task Register()
         {
-            Clients A_Client = new Clients();
+            
+        
+        Clients A_Client = new Clients();
             A_Client.ConnectionId = Context.ConnectionId;
             //A_Client.Name = "a";
             ClientList.Add(A_Client);
@@ -309,6 +357,15 @@ namespace SignalRChat.Hubs
                 {
                     PlayerOneConnId = (ClientList[k].ConnectionId);
                     PlayerTwoConnId = (Context.ConnectionId);
+                    
+                    //////
+                    whoseturn = PlayerOneConnId;
+                    //////
+                    
+                    await Clients.Client(PlayerOneConnId).SendAsync("SetVariable", PlayerOneConnId, PlayerTwoConnId, whoseturn);
+                    await Clients.Client(PlayerTwoConnId).SendAsync("SetVariable", PlayerOneConnId, PlayerTwoConnId, whoseturn);
+
+
 
                     GetGroups();
                     EachGame Game1 = new EachGame();
@@ -347,11 +404,11 @@ namespace SignalRChat.Hubs
                         //prints names
 
                         await Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
-                        whoseturn = PlayerOneConnId.ToString();
+                        //whoseturn = PlayerOneConnId.ToString();
                         await Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
                         await Clients.Client(PlayerOneConnId).SendAsync("Enablebuttons");
                         await Clients.Client(PlayerTwoConnId).SendAsync("Enablebuttons");
-                        buttonAnswer = random.Next(1,6);
+                        //buttonAnswer = random.Next(1,6);
 
                         break;
                     }
