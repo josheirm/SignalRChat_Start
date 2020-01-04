@@ -324,7 +324,7 @@ namespace SignalRChat.Hubs
                 {
 
                     if ((ClientList[j].ConnectionId) == (Context.ConnectionId))
-                    {
+                    { 
                         //removes current player (in game container (above))
                         ClientList.RemoveAt(j);
                         //prints first yor turm and not your turn
