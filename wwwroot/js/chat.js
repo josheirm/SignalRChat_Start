@@ -1,19 +1,10 @@
 ﻿"use strict";
 
-
-
-var integer = 0;
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-
-
-
-//Disable send button until connection is established
+//hasn't been removed yet, vestige
 document.getElementById("sendButton").disabled = true;
 
-
-
-
+//vestige
 connection.on("ReceiveMessage", function (user, message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     var encodedMsg = user + " says " + msg;
@@ -23,62 +14,52 @@ connection.on("ReceiveMessage", function (user, message) {
 });
 
 
-
 connection.on("IsRegister", function () {
 
 
     $('#registerButton').hide();
 
-
 });
 
 connection.on("IsWaiting", function () {
 
-
     $('#registerButton').show();
-
 
 });
 
 
 connection.on("Printnames0", function () {
 
-    //$('#registerButton').hide();
-    $("#messagesList").html("1  ");
+    //erases dispalyed names
+    $("#messagesList").html(" ");
 
 });
 
 
 connection.on("Printnames1", function () { 
 
-    //$('#registerButton').hide();
     $("#messagesList").html("It's your turn!!");
 
 });
 
 connection.on("Printnames2", function () {
 
-    //$('#registerButton').hide();
     $("#messagesList").html("It's not your turn!!");
 
 });
 
-////
 
 connection.on("Enablebuttons", function () {
 
-    
     $('#one').prop('disabled', false);
     $('#two').prop('disabled', false);
     $('#three').prop('disabled', false);
     $('#four').prop('disabled', false);
     $('#five').prop('disabled', false);
-    
 
 });
 
-////
-
+//series of button results
 connection.on("IsButton1_1", function (message) {
     if (message == "won")
     {
@@ -100,7 +81,6 @@ connection.on("IsButton1_2", function (message) {
         $('#one').prop('disabled', true);
     } 
 });
-////////////////
 
 connection.on("IsButton2_1", function (message) {
     if (message == "won") {
@@ -174,9 +154,9 @@ connection.on("IsButton5_2", function (message) {
     }
 });
 
+//end series
 
-
-
+//vestige
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = true;
 }).catch(function (err) {
@@ -184,7 +164,7 @@ connection.start().then(function () {
 });
 
 
-
+//vestige
 document.getElementById("sendButton").addEventListener("click", function (event) {
     var user = document.getElementById("userInput").value;
     var message = document.getElementById("messageInput").value;
@@ -194,7 +174,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     event.preventDefault();
 });
 
-
+//join a game when another player is available
 document.getElementById("registerButton").addEventListener("click", function (event) {
 
     connection.invoke("Register").catch(function (err) {
@@ -204,6 +184,7 @@ document.getElementById("registerButton").addEventListener("click", function (ev
 });
 
 
+//series that invokes a function from the server C# file
 document.getElementById("one").addEventListener("click", function (event) {
 
     connection.invoke("B1").catch(function (err) {
@@ -244,5 +225,4 @@ document.getElementById("five").addEventListener("click", function (event) {
     });
     event.preventDefault();
 });
-
-///////////////
+///end series

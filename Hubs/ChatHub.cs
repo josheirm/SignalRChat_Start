@@ -37,7 +37,6 @@ namespace SignalRChat.Hubs
         public String PlayerOneConnId = "10";
         public String PlayerTwoConnId = "10";
         private String whoseturn;
-        //for group name
         public static int integer = 0;
         public String groupname = "A";
         public int amtplayers = 0;
@@ -56,7 +55,7 @@ namespace SignalRChat.Hubs
             int index = 0;
             for (int i = 0; i < Games.Count; i++)
             {
-                //find the game
+                //find the game - both if thens
                 if (Games[i].Playeroneconn == Context.ConnectionId)
                 {
                     Cone1 = Games[i].Playeroneconn;
@@ -72,20 +71,18 @@ namespace SignalRChat.Hubs
                     Cone1 = Games[i].Playeroneconn;
                     Cone2 = Games[i].Playertwoconn;
                     Group = Games[i].Groupname;
-                    //Groups.RemoveFromGroupAsync(Cone2, Group);
                     index = i;
                     flag = 1;
                     break;
                 }
-
             }
 
 
             if (flag == 1)
             {
-                //Clients.Group(Group).SendAsync("Printnames0");
-                //no longer a pair so needs a new register button
+                //removes register button
                 Clients.Group(Group).SendAsync("IsWaiting");
+                //removes both members of pair using there connections
                 Groups.RemoveFromGroupAsync(Cone1, Group);
                 Groups.RemoveFromGroupAsync(Cone2, Group);
                 Games.RemoveAt(index);
@@ -93,15 +90,14 @@ namespace SignalRChat.Hubs
 
 
         }
-        //IsButton1_1
-        //IsButton1_2
-
+        
+        //passes string to buttonhandler that sends to client and has number of button pressed
         public void B1()
         {
             Buttonhandler("IsButton1_1", "IsButton1_2", 1);
         }
 
-        //
+        
         public void B2()
         {
             Buttonhandler("IsButton2_1", "IsButton2_2", 2);
@@ -130,11 +126,10 @@ namespace SignalRChat.Hubs
             int k = 0;
             for (k = 0;  k < Games.Count; k++)
             {
-                //present player is in this index
+                // find player that matches as curreent player and get all the informaation from list
                 if ((Games[k].Playeroneconn == Context.ConnectionId) || (Games[k].Playertwoconn == Context.ConnectionId))
                 {
 
-                    //check these:
                     PlayerOneConnId = Games[k].Playeroneconn; 
                     PlayerTwoConnId = Games[k].Playertwoconn;
                     //Groupname = groupname;
@@ -145,11 +140,9 @@ namespace SignalRChat.Hubs
             }
                 
                 
-
-
-                    string whoseturnisnt = "";
+            string whoseturnisnt = "";
             if(whoseturn == PlayerOneConnId)
-            {
+            {   //finds alternate player that isn't the current player
                 whoseturnisnt = PlayerTwoConnId;
             }
             else
@@ -157,26 +150,24 @@ namespace SignalRChat.Hubs
                 whoseturnisnt = PlayerOneConnId;
             
             }
-            //only continues if player here is their turn
+           
             if (Context.ConnectionId == whoseturn)
             {
                 //correct guess
                 if (buttonAnswer == buttonnumpressed)
                 {
-                    //winner
-                    //Clients.Client(whoseturn).SendAsync("IsButton1_1", "won");
+                    //display win and lose text
                     Clients.Client(whoseturn).SendAsync(button1text, "won");
-                    //loser
                     Clients.Client(whoseturnisnt).SendAsync(button2text, "won");
-                    DisconnectGame();
+                    //rewrites register button
+                    //removes group
+                    //remove game from game list
+                     DisconnectGame();
 
                 }
                 //incorrect guess
                 else
-                {
-
-                    //////////
-                    //Changeturn() put here:
+                    //change turn to other player
                     if (whoseturn == PlayerOneConnId)
                     {
                         whoseturn = PlayerTwoConnId;
@@ -186,39 +177,25 @@ namespace SignalRChat.Hubs
                         whoseturn = PlayerOneConnId;
                     }
                     Games[k].Whosturn = whoseturn;
-                    ///////////
-
+                    //displays is and isn't player's turn
                     Printturn(PlayerOneConnId, PlayerTwoConnId , whoseturn);
                     
                     //disables buttons
                     Clients.Client(PlayerOneConnId).SendAsync(button1text, "other");
                     Clients.Client(PlayerTwoConnId).SendAsync(button2text, "other");
-                    
-
-                }
+                    }
             }
-        }
-
-
+        
         public override Task OnConnectedAsync()
         {
-
-            //Clients.All.SendAsync("IsButton1", "no");
-
-
             return base.OnConnectedAsync();
         }
-
-
-
-
-
         public ChatHub()
         {
 
-            //whoseturn = "";
         }
 
+        //print new turn indicator text (your turn and not your turn)
         public void Printturn(string PlayerOneConnId, string PlayerTwoConnId, string whoseturn)
         {
             if (whoseturn == PlayerOneConnId)
@@ -234,28 +211,13 @@ namespace SignalRChat.Hubs
                 Clients.Client(PlayerOneConnId).SendAsync("Printnames2");
             }
         }
-        public void Changeturn(string PlayerOneConnId, string PlayerTwoConnId, string whoseturn)
-        {
-
-            if (whoseturn == PlayerOneConnId)
-            {
-                whoseturn = PlayerTwoConnId;
-            }
-            else
-            {
-                whoseturn = PlayerOneConnId;
-            }
-        }
+        
+        //produces a unique group name with static integer
         public void GetGroups()
         {
-            integer++;
             groupname = "group" + integer;
         }
-
-
-
-
-
+        //a player disconnected
         public override Task OnDisconnectedAsync(Exception e)
         {
             int flag = 0;
@@ -263,13 +225,14 @@ namespace SignalRChat.Hubs
             string Cone2 = "";
             string Group = "";
             int index = 0;
+            //get all the info
             for (int i = 0; i < Games.Count; i++)
             {
                 if (Games[i].Playeroneconn == Context.ConnectionId)
                 {
                     Cone1 = Games[i].Playeroneconn;
-                    Cone2 = Games[i].Playertwoconn;
                     Group = Games[i].Groupname;
+                    //removes the first user from group
                     Groups.RemoveFromGroupAsync(Cone1, Group);
                     index = i;
                     flag = 1;
@@ -277,96 +240,82 @@ namespace SignalRChat.Hubs
                 }
                 if (Games[i].Playertwoconn == Context.ConnectionId)
                 {
-                    Cone1 = Games[i].Playeroneconn;
                     Cone2 = Games[i].Playertwoconn;
                     Group = Games[i].Groupname;
+                    //removes the sencond player from connection
                     Groups.RemoveFromGroupAsync(Cone2, Group);
                     index = i;
                     flag = 1;
                     break;
                 }
-
             }
-
-
             if (flag == 1)
             {
+                //clears the text 
                 Clients.Group(Group).SendAsync("Printnames0");
                 //no longer a pair so needs a new register button
                 Clients.Group(Group).SendAsync("IsWaiting");
-
+                //rmoves game from the list
                 Games.RemoveAt(index);
             }
-
-
-
-
-
             return base.OnDisconnectedAsync(e);
         }
-
-
-
+        //not used
         public async Task SendMessage(string user, string message)
         {
-            //await Clients.All.SendAsync("ReceiveMessage", user, message);
-            await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", user, message);
+           await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", user, message);
 
         }
-
-
-
-
         public async Task Register()
         {
             Clients A_Client = new Clients();
             A_Client.ConnectionId = Context.ConnectionId;
-            //A_Client.Name = "a";
+            //no name recorded yet
             ClientList.Add(A_Client);
             //hides button
-            //asynch
             await Clients.Caller.SendAsync("IsRegister");
+            //
             var flag1 = 0;
-            //foreach (Clients element in ClientList)
+           
             for (int k = ClientList.Count - 1; k >= 0; --k)
             {
-                //PlayerOneConnId = "";
-                //PlayerTwoConnId = "";
-
-                //not the current user - open page, gets removed after used
+                
+                //not the current user, means there is a pair to match up
                 if ((ClientList[k].ConnectionId) != (Context.ConnectionId))
                 {
+                    //get connections from list 
                     PlayerOneConnId = (ClientList[k].ConnectionId);
                     PlayerTwoConnId = (Context.ConnectionId);
-
+                    //gets a unique group name
                     GetGroups();
+                    //element
                     EachGame Game1 = new EachGame();
+                    
+                    ////////isn't used yet (for testing purposes)
+                    // random.Next(1,6);
+                    buttonAnswer = 1; 
                     ////////
-                    buttonAnswer = 1; // random.Next(1,6);
-                    ////////
-                    //check these:
+                    //Values set the Game1 element so that they can be used later
                     Game1.Playertwoconn = PlayerTwoConnId;
                     Game1.Playeroneconn = PlayerOneConnId;
                     Game1.Groupname = groupname;
                     Game1.Whosturn = PlayerOneConnId;
-                   
                     Game1.Answer = buttonAnswer;
+                    //this list used because hubs are transient, meaning they don't keep values after method ends
                     Games.Add(Game1);
 
                     
                     await Groups.AddToGroupAsync(PlayerTwoConnId, groupname);
                     await Groups.AddToGroupAsync(PlayerOneConnId, groupname);
-                    integer++;
-                    //firstregister = 1;
-
-                    //remove other player
+                   
+                    //remove other player, group has been added to (above)
                     ClientList.RemoveAt(k);
-                    //remove current player flag
+                    //there are two players flag
                     flag1 = 1;
                     break;
                 }
             }
-            //there was another player so remove other
+            //there was another player 
             if (flag1 == 1)
             {
                 flag1 = 0;
@@ -376,29 +325,21 @@ namespace SignalRChat.Hubs
 
                     if ((ClientList[j].ConnectionId) == (Context.ConnectionId))
                     {
-                        //removes current player
+                        //removes current player (in game container (above))
                         ClientList.RemoveAt(j);
-                        //prints names
-
+                        //prints first yor turm and not your turn
                         await Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
-                        whoseturn = PlayerOneConnId.ToString();
                         await Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
-                        await Clients.Client(PlayerOneConnId).SendAsync("Enablebuttons");
-                        await Clients.Client(PlayerTwoConnId).SendAsync("Enablebuttons");
-                        
-                        break;
+                        //changed this recently
+                        //await Clients.Client(PlayerOneConnId).SendAsync("Enablebuttons");
+                        //await Clients.Client(PlayerTwoConnId).SendAsync("Enablebuttons");
+                        await Clients.Group(groupname).SendAsync("Enablebuttons");
+                         break;
                     }
 
                 }
             }
-
-
-
-
-
         }
-
     }
-
 
 }
