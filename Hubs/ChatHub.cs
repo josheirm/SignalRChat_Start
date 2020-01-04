@@ -135,7 +135,7 @@ namespace SignalRChat.Hubs
                 {
 
                     //check these:
-                    PlayerOneConnId = Games[k].Playeroneconn;
+                    PlayerOneConnId = Games[k].Playeroneconn; 
                     PlayerTwoConnId = Games[k].Playertwoconn;
                     //Groupname = groupname;
                     whoseturn = Games[k].Whosturn;
