@@ -15,11 +15,15 @@ public class EachGame
     public String Playeroneconn { get; set; }
     public String Playertwoconn { get; set; }
     public String Groupname { get; set; }
+    public String Whosturn { get; set; }
+
+    public int Answer { get; set; }
+
 }
 
 public class Variables
 {
-    public string whoseturn { get; set; }
+    
 }
 
 
@@ -32,23 +36,16 @@ namespace SignalRChat.Hubs
     {
         public String PlayerOneConnId = "10";
         public String PlayerTwoConnId = "10";
-
-
-        private static String whoseturn;
+        private String whoseturn;
+        //for group name
         public static int integer = 0;
-        //private String firstregister = "1";
         public String groupname = "A";
         public int amtplayers = 0;
-        
-        public static int buttonAnswer = 5;
-        public static int firststart = 1;
-
-
+        public int buttonAnswer = 5;
         public static readonly List<Clients> ClientList = new List<Clients>();
         public static readonly List<EachGame> Games = new List<EachGame>();
         public static readonly Random random = new Random();
-        Variables var = new Variables();
-
+        
 
         public void DisconnectGame()
         {
@@ -125,11 +122,32 @@ namespace SignalRChat.Hubs
             Buttonhandler("IsButton5_1", "IsButton5_2", 5);
         }
 
-        //
+         
+
 
         public void Buttonhandler(string button1text, string button2text, int buttonnumpressed )
         {
-            string whoseturnisnt = "";
+            int k = 0;
+            for (k = 0;  k < Games.Count; k++)
+            {
+                //present player is in this index
+                if ((Games[k].Playeroneconn == Context.ConnectionId) || (Games[k].Playertwoconn == Context.ConnectionId))
+                {
+
+                    //check these:
+                    PlayerOneConnId = Games[k].Playeroneconn;
+                    PlayerTwoConnId = Games[k].Playertwoconn;
+                    //Groupname = groupname;
+                    whoseturn = Games[k].Whosturn;
+                    buttonAnswer = Games[k].Answer;
+                    break;
+                }
+            }
+                
+                
+
+
+                    string whoseturnisnt = "";
             if(whoseturn == PlayerOneConnId)
             {
                 whoseturnisnt = PlayerTwoConnId;
@@ -156,15 +174,26 @@ namespace SignalRChat.Hubs
                 //incorrect guess
                 else
                 {
-                    //await Clients.All.SendAsync("IsButton1", "no");
-                    Changeturn();
-                    Printturn();
-                    //Clients.Client(PlayerOneConnId).SendAsync("IsButton1_1", "other");
-                    //Clients.Client(PlayerTwoConnId).SendAsync("IsButton1_2", "other");
+
+                    //////////
+                    //Changeturn() put here:
+                    if (whoseturn == PlayerOneConnId)
+                    {
+                        whoseturn = PlayerTwoConnId;
+                    }
+                    else
+                    {
+                        whoseturn = PlayerOneConnId;
+                    }
+                    Games[k].Whosturn = whoseturn;
+                    ///////////
+
+                    Printturn(PlayerOneConnId, PlayerTwoConnId , whoseturn);
+                    
+                    //disables buttons
                     Clients.Client(PlayerOneConnId).SendAsync(button1text, "other");
                     Clients.Client(PlayerTwoConnId).SendAsync(button2text, "other");
-                    //Clients.Client(PlayerOneConnId).SendAsync("IsWaiting");
-                    //Clients.Client(PlayerTwoConnId).SendAsync("IsWaiting");
+                    
 
                 }
             }
@@ -190,22 +219,22 @@ namespace SignalRChat.Hubs
             //whoseturn = "";
         }
 
-        public void Printturn()
+        public void Printturn(string PlayerOneConnId, string PlayerTwoConnId, string whoseturn)
         {
             if (whoseturn == PlayerOneConnId)
             {
-                Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
+                
                 Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
-
+                Clients.Client(PlayerOneConnId).SendAsync("Printnames1");
             }
             else
             {
-                Clients.Client(PlayerOneConnId).SendAsync("Printnames2");
+               
                 Clients.Client(PlayerTwoConnId).SendAsync("Printnames1");
-
+                Clients.Client(PlayerOneConnId).SendAsync("Printnames2");
             }
         }
-        public void Changeturn()
+        public void Changeturn(string PlayerOneConnId, string PlayerTwoConnId, string whoseturn)
         {
 
             if (whoseturn == PlayerOneConnId)
@@ -312,11 +341,16 @@ namespace SignalRChat.Hubs
 
                     GetGroups();
                     EachGame Game1 = new EachGame();
-
+                    ////////
+                    buttonAnswer = 1; // random.Next(1,6);
+                    ////////
                     //check these:
                     Game1.Playertwoconn = PlayerTwoConnId;
                     Game1.Playeroneconn = PlayerOneConnId;
                     Game1.Groupname = groupname;
+                    Game1.Whosturn = PlayerOneConnId;
+                   
+                    Game1.Answer = buttonAnswer;
                     Games.Add(Game1);
 
                     
@@ -351,8 +385,7 @@ namespace SignalRChat.Hubs
                         await Clients.Client(PlayerTwoConnId).SendAsync("Printnames2");
                         await Clients.Client(PlayerOneConnId).SendAsync("Enablebuttons");
                         await Clients.Client(PlayerTwoConnId).SendAsync("Enablebuttons");
-                        buttonAnswer = random.Next(1,6);
-
+                        
                         break;
                     }
 

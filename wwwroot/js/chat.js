@@ -174,7 +174,8 @@ connection.on("IsButton5_2", function (message) {
     }
 });
 
-////////////////
+
+
 
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = true;
